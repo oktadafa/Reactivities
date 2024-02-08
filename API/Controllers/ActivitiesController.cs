@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Untuk DbContext dan ToListAsync()
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Domain; // Pastikan ini sesuai dengan namespace definisi 'Activity'
 using Persistence; // Pastikan ini sesuai dengan namespace definisi 'DataContext'
 
@@ -30,7 +27,7 @@ namespace API.Controllers
             return await _context.Activities.FindAsync(id);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
 
         public async Task<ActionResult> DeleteActivity(Guid id)
         {
