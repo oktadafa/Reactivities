@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { Activity } from '../../../app/models/activities'
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
 
