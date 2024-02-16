@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Untuk DbContext dan ToListAsync()
 using Domain; // Pastikan ini sesuai dengan namespace definisi 'Activity'
-using Persistence;
-using MediatR;
-using Application.Activities; // Pastikan ini sesuai dengan namespace definisi 'DataContext'
+
+using Application.Activities;
+using Application.DTO; // Pastikan ini sesuai dengan namespace definisi 'DataContext'
 
 
 namespace API.Controllers
@@ -26,17 +26,16 @@ namespace API.Controllers
         }
 
         [HttpPost("tambah")]
-        public async Task<IActionResult> CreateActivity([FromBody]Activity activity)
+        public async Task<IActionResult> CreateActivity([FromBody]ActivityDTO activity)
         {
             await Mediator.Send(new Create.Command { activity = activity });
             return Ok();
         }
 
         [HttpPut("edit/{id}")]
-        public async Task<IActionResult> UpdateActivity(Guid id, [FromBody] Activity activity)
+        public async Task<IActionResult> UpdateActivity(Guid id, [FromBody] ActivityDTO activity)
         {
-            activity.Id = id;
-            await Mediator.Send(new Edit.Command{activity = activity});
+            await Mediator.Send(new Edit.Command{activity = activity, id = id});
             return Ok();
         }
 
@@ -44,23 +43,9 @@ namespace API.Controllers
 
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
+            Console.Write(id);
             await Mediator.Send(new Delete.Command{id = id});
             return Ok();
         }
-
-        // [HttpDelete("delete/{id}")]
-
-        // public async Task<ActionResult> DeleteActivity(Guid id)
-        // {
-        //     var activityToDelete = _context.Activities.Find(id);
-        //     if (activityToDelete != null)
-        //     {
-        //         _context.Activities.Remove(activityToDelete);
-        //        await _context.SaveChangesAsync();
-        //         return NoContent();
-        //     }else{
-        //         return NotFound();
-        //     }
-        // }
     }
 }
