@@ -1,11 +1,16 @@
-import  { ChangeEvent, useState } from 'react'
-import { Button, Form, FormField, FormInput, FormTextArea, Label, Segment } from 'semantic-ui-react'
+import  { ChangeEvent, useEffect, useState } from 'react'
+import { Button, Form, FormInput, FormTextArea, Segment } from 'semantic-ui-react'
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Activity } from '../../../app/models/activities';
+import {v4 as uuid} from 'uuid';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 export default observer(function ActivityForm() {
   const { activityStore } = useStore();
-  const { activity: selecetedActivity, closeForm, updateActivity, createActivity, loadingUpdate } = activityStore;
-  const InitialState = selecetedActivity ?? {
+  const {  updateActivity, createActivity, loadingUpdate, loadActivity, loadingInitial} = activityStore;
+  const navigate = useNavigate()
+  const [activity, setActivity] = useState<Activity>({
     id: "",
     title: "",
     venue: "",
@@ -13,20 +18,35 @@ export default observer(function ActivityForm() {
     description: "",
     city: "",
     date: "",
-  };
-  const [activity, setActivity] = useState(InitialState);
+  });
+
+  useEffect(() => {
+    if (id) {
+      loadActivity(id).then(activity => setActivity(activity!))
+    }
+  },[])
+  const {id} = useParams();
   const handleSubmit = () => {
-activity.id ? updateActivity(activity) : createActivity(activity)  
+    if (!activity.id) {
+      activity.id =  uuid();
+createActivity(activity).then(() => navigate(`/activities/${activity.id}`))  
+    }else {
+   updateActivity(activity).then(() => navigate(`/activities/${activity.id}`)); 
+    }
   };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    console.log(value);
+    
     setActivity({ ...activity, [name]: value });
   };
 
-
+if (loadingInitial) {
+  <LoadingComponent content='Loading App..'/>
+}
   
   return (
     <Segment clearing>
@@ -79,7 +99,8 @@ activity.id ? updateActivity(activity) : createActivity(activity)
           floated="right"
           type="button"
           content="Cancel"
-          onClick={() => closeForm()}
+          as={Link}
+          to={"/activities"}
         />
       </Form>
     </Segment>

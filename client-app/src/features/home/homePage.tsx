@@ -1,10 +1,19 @@
-import React from 'react'
-import { Container } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
+import { Button, Container, Header, Image, Segment } from 'semantic-ui-react'
 
 export default function HomePage() {
   return (
-    <Container style={{marginTop : "7em"}}>
-        <div>homePage</div>
-    </Container>
+    <Segment inverted textAlign='center' vertical className='masthead'> 
+        <Container text>
+          <Header as='h1' inverted >
+            <Image size='massive' src='assets/logo.png' alt='logo' style={{marginBottom:12}}/>
+              Reactivities
+        </Header>
+        <Header as='h2' inverted content='welcome to Reactivities'/>
+        <Button as={Link} to='/activities' size='huge' inverted>
+            Take Me To The Activities
+          </Button>
+        </Container>
+    </Segment>
   )
 }

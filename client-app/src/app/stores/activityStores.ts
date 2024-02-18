@@ -19,15 +19,22 @@ get ActivitiesByDate()
     return Array.from(this.activityREgistry.values()).sort((a,b) => Date.parse(a.date) - Date.parse(b.date))
 }
 
+get groupActivities() {
+    return Object.entries(
+        this.ActivitiesByDate.reduce((activities, activity) => {
+            const date = activity.date;
+            activities[date] = activities[date] ? [...activities[date],activity] : [activity] ;
+             return activities;
+        },{} as {[key:string] : Activity[]})
+    )
+}
     loadingActivies = async() => {
      this.loadingInitial = true;
      try {
         const activities = await agent.Activities.list()
         
-            activities.forEach((activit) => {                
-              activit.date = activit.date.split("T")[0];
-            //   this.activities.push(activit);
-            this.activityREgistry.set(activit.id, activit)
+            activities.forEach((activit) => {             
+                this.setActivity(activit)
             });
             this.loadingInitial = false;
             
@@ -37,25 +44,38 @@ get ActivitiesByDate()
      }
     }
 
+    loadActivity = async (id:string) => {
+        let activity = this.getActivity(id)
+        if (activity) {
+            this.activity = activity;
+            return activity;
+        }else {
+            this.setLoadingInitial(true);
+            try {
+                activity = await agent.Activities.details(id);
+                this.setActivity(activity);
+                this.activity= activity;
+                this.setLoadingInitial(false)
+                return activity;
+            } catch (error) {
+                console.log(error);
+                this.setLoadingInitial(false)
+            }
+        }
+    }
+
+    private setActivity = (activity:Activity) => {
+          activity.date = activity.date.split("T")[0];
+          //   this.activities.push(activit);
+          this.activityREgistry.set(activity.id, activity);
+    }
+
+    private getActivity = (id:string) => {
+        return this.activityREgistry.get(id);
+    }
+
     setLoadingInitial = (state:boolean) => {
         this.loadingInitial = state
-    }
-
-    selectActivity = (id:string) => {
-        this.activity = this.activityREgistry.get(id);
-    }
-
-    cancelSelectActivity = () => {
-        this.activity = undefined
-    }
-
-    openForm = (id?:string) => {
-        id ? this.selectActivity(id) : this.cancelSelectActivity();
-        this.editModal = true;
-    }
-
-    closeForm = () => {
-        this.editModal = false;
     }
 
     createActivity = async(activity:Activity) => {
@@ -103,7 +123,6 @@ get ActivitiesByDate()
             await agent.Activities.delete(id)
             runInAction(() => {
                 this.activityREgistry.delete(id);
-                if(this.activity?.id === id) this.cancelSelectActivity()
                     this.laodinDelete = false
             })
         } catch (error) {
