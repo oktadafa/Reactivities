@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Container, Menu } from "semantic-ui-react";
 import { useStore } from "../stores/store";
 import { NavLink } from "react-router-dom";
@@ -20,6 +19,7 @@ export default function Navbar()
             Reactivities
           </Menu.Item>
           <Menu.Item name="Activities" as={NavLink} to={"/activities"} />
+          <Menu.Item name="Error" as={NavLink} to={"/errors"} />
           <Menu.Item>
             <Button
               positive

@@ -7,6 +7,7 @@ import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
 import { Outlet, useLocation } from 'react-router-dom';
 import HomePage from '../../features/home/homePage';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
 const {activityStore} = useStore()
@@ -20,19 +21,22 @@ useEffect(() => {
 
 if(activityStore.loadingInitial) return <LoadingComponent content='App Loading..'/>
 
-if (location.pathname == "/") {
-  return (<HomePage/>)
-}else{
-
   return (
     <>
+    <ToastContainer position='bottom-right' hideProgressBar theme='colored'/>
+    {location.pathname == "/" ?<HomePage/> :
+      (
+        <>
       <Navbar/>
       <Container style={{marginTop:"7em"}}>
        <Outlet/>
     </Container>
+        </>
+      )
+      }
     </> 
   )
 }
-}
+
 
 export default observer(App) 

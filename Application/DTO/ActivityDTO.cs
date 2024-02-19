@@ -8,7 +8,7 @@ namespace Application.DTO
     public class ActivityDTO
     {
         public string Title { get; set; }
-
+        
         public DateOnly Date { get; set; }
 
         public string Description { get; set; }

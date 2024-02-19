@@ -13,16 +13,16 @@ namespace API.Controllers
 
         [HttpGet] //api/activities
 
-        public async Task<ActionResult<List<Activity>>> GetActivities()
+        public async Task<IActionResult> GetActivities()
         {
-            return await Mediator.Send(new List.Query());
+            return handleResult(await Mediator.Send(new List.Query()));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Activity>> GetActivity(Guid id)
+        public async Task<IActionResult> GetActivity(Guid id)
         {
             // return await _context.Activities.FindAsync(id);
-            return await Mediator.Send(new Detail.Query{Id = id});
+            return handleResult(await Mediator.Send(new Detail.Query { Id = id }));
         }
 
         [HttpPost("tambah")]
@@ -35,17 +35,15 @@ namespace API.Controllers
         [HttpPut("edit/{id}")]
         public async Task<IActionResult> UpdateActivity(Guid id, [FromBody] ActivityDTO activity)
         {
-            await Mediator.Send(new Edit.Command{activity = activity, id = id});
-            return Ok();
+            return handleResult(await Mediator.Send(new Edit.Command { activity = activity, id = id }));
         }
 
         [HttpDelete("delete/{id}")]
 
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
-            Console.Write(id);
-            await Mediator.Send(new Delete.Command{id = id});
-            return Ok();
+            return handleResult(await Mediator.Send(new Delete.Command { id = id }));
+            
         }
     }
 }
